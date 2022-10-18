@@ -31,8 +31,9 @@ app = typer.Typer()
 async def notify_of_alert(
     event: Message,
     webhook_client: AsyncWebhookClient,
-    members_by_hashtag: Optional[dict[str, list[str]]],
-    locale: Locale,
+    members_by_hashtag: Optional[dict[str, list[str]]] = None,
+    ignore_without_mentions: bool = True,
+    locale: Locale = Locale.uk,
 ) -> None:
     event_logger = logger.bind(event_id=event.id)
     event_logger.debug("event.received", raw_text=event.raw_text)
@@ -48,7 +49,7 @@ async def notify_of_alert(
         members_by_hashtag[alert["hashtag"]] if members_by_hashtag is not None else []
     )
 
-    if members_by_hashtag is not None and not members:
+    if ignore_without_mentions and members_by_hashtag is not None and not members:
         event_logger.info("alert.skipped", hashtag=alert["hashtag"])
         return
 
@@ -90,6 +91,13 @@ def main(
             "Member ids and their locations as hashtags in CSV format for mentioning in"
             " notifications. The tool expects two columns `member_id` and `hashtag`."
             " See location hashtags in the official channel."
+        ),
+    ),
+    ignore_without_mentions: bool = typer.Option(
+        True,
+        help=(
+            "Ignore or send notifications that don't mention members. By default, the"
+            " tool ignores notifications if the --members option is set."
         ),
     ),
     chat_id: int = typer.Option(
@@ -178,6 +186,7 @@ def main(
                 notify_of_alert,
                 webhook_client=webhook_client,
                 members_by_hashtag=members_by_hashtag,
+                ignore_without_mentions=ignore_without_mentions,
                 locale=locale,
             ),
             events.NewMessage(chats=[chat_id]),
