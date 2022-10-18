@@ -1,8 +1,10 @@
 import sys
+from collections import defaultdict
 from copy import copy
 from functools import partial
-from typing import Any, Dict
+from typing import Any, Optional
 
+import pandas as pd
 import typer
 from loguru import logger
 from slack_sdk.http_retry.builtin_async_handlers import (
@@ -27,7 +29,10 @@ app = typer.Typer()
 
 
 async def notify_of_alert(
-    event: Message, webhook_client: AsyncWebhookClient, locale: Locale
+    event: Message,
+    webhook_client: AsyncWebhookClient,
+    members_by_hashtag: Optional[dict[str, list[str]]],
+    locale: Locale,
 ) -> None:
     event_logger = logger.bind(event_id=event.id)
     event_logger.debug("event.received", raw_text=event.raw_text)
@@ -39,8 +44,18 @@ async def notify_of_alert(
         event_logger.exception("event.not_parsed", raw_text=event.raw_text)
         return
 
-    message = await format_alert(alert, locale)
-    event_logger.debug("alert.formatted", message=message, locale=locale.value)
+    members = (
+        members_by_hashtag[alert["hashtag"]] if members_by_hashtag is not None else []
+    )
+
+    if members_by_hashtag is not None and not members:
+        event_logger.info("alert.skipped", hashtag=alert["hashtag"])
+        return
+
+    message = await format_alert(alert, members, locale)
+    event_logger.debug(
+        "alert.formatted", message=message, members=members, locale=locale.value
+    )
 
     try:
         response = await webhook_client.send(text=message)
@@ -68,6 +83,14 @@ def main(
     ),
     webhook_url: str = typer.Argument(
         ..., envvar="RAID_WEBHOOK_URL", help="Slack incoming webhook."
+    ),
+    members: Optional[str] = typer.Option(
+        None,
+        help=(
+            "Member ids and their locations as hashtags in CSV format for mentioning in"
+            " notifications. The tool expects two columns `member_id` and `hashtag`."
+            " See location hashtags in the official channel."
+        ),
     ),
     chat_id: int = typer.Option(
         default=1766138888,
@@ -127,6 +150,23 @@ def main(
         ],
     )
 
+    members_by_hashtag: Optional[dict[str, list[str]]] = None
+    if members is not None:
+        members_df = pd.read_csv(
+            members, names=["member_id", "hashtag"], skiprows=1
+        ).drop_duplicates()
+
+        members_by_hashtag = defaultdict(
+            list,
+            members_df.groupby("hashtag")["member_id"].apply(list).to_dict(),
+        )
+
+        logger.info(
+            "members.loaded",
+            members=members_df["member_id"].nunique(),
+            hashtags=len(members_by_hashtag),
+        )
+
     load_translations(locale)
 
     client = TelegramClient("raid", api_id, api_hash, auto_reconnect=True)
@@ -134,13 +174,18 @@ def main(
         logger.info("client.connected", api_id=api_id, chat_id=chat_id)
 
         client.add_event_handler(
-            partial(notify_of_alert, webhook_client=webhook_client, locale=locale),
+            partial(
+                notify_of_alert,
+                webhook_client=webhook_client,
+                members_by_hashtag=members_by_hashtag,
+                locale=locale,
+            ),
             events.NewMessage(chats=[chat_id]),
         )
         client.run_until_disconnected()
 
 
-def _patch_record(record: Dict[str, Any]) -> None:
+def _patch_record(record: dict[str, Any]) -> None:
     if "alert" in record["extra"]:
         alert = copy(record["extra"]["alert"])
         alert["status"] = str(alert["status"])

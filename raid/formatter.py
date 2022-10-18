@@ -1,6 +1,8 @@
 import asyncio
+from datetime import datetime
 from enum import Enum
 from functools import lru_cache
+from typing import Iterable
 
 from deep_translator import GoogleTranslator
 from i18n import set as _set_i18n_option
@@ -22,17 +24,26 @@ def load_translations(locale: Locale) -> None:
     __import__(f"raid.locales.{locale}")
 
 
-async def format_alert(alert: Alert, locale: Locale) -> str:
+async def format_alert(alert: Alert, member_ids: Iterable[str], locale: Locale) -> str:
     _set_i18n_option("locale", locale)
 
     fields = {
         "status": alert["status"],
-        "time": alert["time"].strftime(_ALERT_TIME_FORMAT),
+        "time": _format_alert_time(alert["time"]),
         "threat": alert["threat"],
         "location": await _translate_alert_location(alert["location"], locale),
+        "mentions": f" {_format_mentions(member_ids)}" if member_ids else "",
     }
 
     return translate(f"{alert['threat']}.{alert['status']}", **fields)
+
+
+def _format_alert_time(time: datetime) -> str:
+    return time.strftime(_ALERT_TIME_FORMAT)
+
+
+def _format_mentions(member_ids: Iterable[str]) -> str:
+    return ", ".join(map(lambda x: f"<@{x}>", set(member_ids))) if member_ids else ""
 
 
 async def _translate_alert_location(location: str, locale: Locale) -> str:

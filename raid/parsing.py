@@ -11,7 +11,8 @@ _ALERT_PATTERN = re.compile(
         r"^(?P<status>.)"
         r".*(?:тривог[аи] в|Зараз у|артобстрілу в)\s"
         r"(?P<location>.*)"
-        r"\s(?:Слідкуйте|Зверніть|артилерійський).*$"
+        r"\s(?:Слідкуйте|Зверніть|артилерійський).*"
+        r"(?P<hashtag>#.*)$"
     ),
     re.DOTALL,
 )
@@ -44,6 +45,7 @@ class Alert(TypedDict):
     time: datetime
     threat: Threat
     location: str
+    hashtag: str
 
 
 def parse_alert(text: str, time: datetime) -> Alert:
@@ -56,6 +58,7 @@ def parse_alert(text: str, time: datetime) -> Alert:
         "time": _normalize_alert_time(time),
         "threat": _parse_alert_threat(text),
         "location": _normalize_alert_location(match["location"]),
+        "hashtag": match["hashtag"],
     }
 
 

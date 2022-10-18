@@ -6,22 +6,22 @@ __locale__ = "uk"
 
 _(
     f"{Threat.AirRaid}.{AlertStatus.Active}",
-    "%{status}%{threat} %{time} Повітряна тривога в %{location}.",
+    "%{status}%{threat} %{time} Повітряна тривога в %{location}.%{mentions}",
     __locale__,
 )
 _(
     f"{Threat.AirRaid}.{AlertStatus.Inactive}",
-    "%{status}%{threat} %{time} Повітряна тривога в %{location}.",
+    "%{status}%{threat} %{time} Повітряна тривога в %{location}.%{mentions}",
     __locale__,
 )
 
 _(
     f"{Threat.ArtilleryShelling}.{AlertStatus.Active}",
-    "%{status}%{threat} %{time} Загроза артобстрілу в %{location}.",
+    "%{status}%{threat} %{time} Загроза артобстрілу в %{location}.%{mentions}",
     __locale__,
 )
 _(
     f"{Threat.ArtilleryShelling}.{AlertStatus.Inactive}",
-    "%{status}%{threat} %{time} Відбій загрози артобстрілу в %{location}.",
+    "%{status}%{threat} %{time} Відбій загрози артобстрілу в %{location}.%{mentions}",
     __locale__,
 )
