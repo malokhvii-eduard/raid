@@ -2,7 +2,7 @@ import sys
 from collections import defaultdict
 from copy import copy
 from functools import partial
-from typing import Any, Optional
+from typing import Any, Dict, List, Optional
 
 import pandas as pd
 import typer
@@ -31,7 +31,7 @@ app = typer.Typer()
 async def notify_of_alert(
     event: Message,
     webhook_client: AsyncWebhookClient,
-    members_by_hashtag: Optional[dict[str, list[str]]] = None,
+    members_by_hashtag: Optional[Dict[str, List[str]]] = None,
     ignore_without_mentions: bool = True,
     locale: Locale = Locale.uk,
 ) -> None:
@@ -158,7 +158,7 @@ def main(
         ],
     )
 
-    members_by_hashtag: Optional[dict[str, list[str]]] = None
+    members_by_hashtag: Optional[Dict[str, List[str]]] = None
     if members is not None:
         members_df = pd.read_csv(
             members, names=["member_id", "hashtag"], skiprows=1
@@ -194,7 +194,7 @@ def main(
         client.run_until_disconnected()
 
 
-def _patch_record(record: dict[str, Any]) -> None:
+def _patch_record(record: Dict[str, Any]) -> None:
     if "alert" in record["extra"]:
         alert = copy(record["extra"]["alert"])
         alert["status"] = str(alert["status"])
