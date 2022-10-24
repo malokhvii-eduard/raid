@@ -13,6 +13,7 @@ from slack_sdk.http_retry.builtin_async_handlers import (
 )
 from slack_sdk.webhook.async_client import AsyncWebhookClient
 from telethon import TelegramClient, events
+from telethon.sessions import StringSession
 from telethon.tl.custom.message import Message
 
 from raid.formatter import Locale, format_alert, load_translations
@@ -84,6 +85,9 @@ def main(
     ),
     webhook_url: str = typer.Argument(
         ..., envvar="RAID_WEBHOOK_URL", help="Slack incoming webhook."
+    ),
+    session: Optional[str] = typer.Argument(
+        None, envvar="RAID_SESSION", help="Telegram login credentials."
     ),
     members: Optional[str] = typer.Option(
         None,
@@ -184,8 +188,13 @@ def main(
 
     load_translations(locale)
 
-    client = TelegramClient("raid", api_id, api_hash, auto_reconnect=True)
+    client = TelegramClient(
+        StringSession(session), api_id, api_hash, auto_reconnect=True
+    )
     with client:
+        if session is None:
+            print(f"\n{client.session.save()}")
+
         logger.info("client.connected", api_id=api_id, chat_id=chat_id)
 
         client.add_event_handler(
