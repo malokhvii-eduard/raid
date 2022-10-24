@@ -130,6 +130,13 @@ def main(
         "--debug",
         help="Show information useful for debugging and for reporting bugs.",
     ),
+    header: bool = typer.Option(
+        True,
+        help=(
+            "Skip the first row in the CSV file. By default, the tool omits the first"
+            " row with column names."
+        ),
+    ),
 ) -> None:
     """
     A simple tool to get immediate notifications in Slack once your Ukrainian
@@ -161,7 +168,7 @@ def main(
     members_by_hashtag: Optional[Dict[str, List[str]]] = None
     if members is not None:
         members_df = pd.read_csv(
-            members, names=["member_id", "hashtag"], skiprows=1
+            members, names=["member_id", "hashtag"], skiprows=1 if header else 0
         ).drop_duplicates()
 
         members_by_hashtag = defaultdict(
