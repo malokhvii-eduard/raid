@@ -141,6 +141,14 @@ def main(
             " row with column names."
         ),
     ),
+    show_session: bool = typer.Option(
+        False,
+        "--show-session",
+        help=(
+            "Show Telegram login credentials. Use this option to obtain Telegram login"
+            " credentials."
+        ),
+    ),
 ) -> None:
     """
     A simple tool to get immediate notifications in Slack once your Ukrainian
@@ -192,8 +200,8 @@ def main(
         StringSession(session), api_id, api_hash, auto_reconnect=True
     )
     with client:
-        if session is None:
-            print(f"\n{client.session.save()}")
+        if show_session:
+            print(f"\nSession:\n\n{client.session.save()}\n")
 
         logger.info("client.connected", api_id=api_id, chat_id=chat_id)
 
