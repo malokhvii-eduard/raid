@@ -13,6 +13,7 @@ from slack_sdk.http_retry.builtin_async_handlers import (
 )
 from slack_sdk.webhook.async_client import AsyncWebhookClient
 from telethon import TelegramClient, events
+from telethon.errors import SessionPasswordNeededError
 from telethon.sessions import StringSession
 from telethon.tl.custom.message import Message
 
@@ -69,6 +70,23 @@ async def notify_of_alert(
             )
     except (Exception,):
         event_logger.exception("alert.not_sent", message=message)
+
+
+async def sign_in(client: TelegramClient) -> None:
+    await client.connect()
+
+    if await client.is_user_authorized():
+        return
+
+    phone = typer.prompt("Phone")
+    await client.send_code_request(phone, force_sms=False)
+
+    try:
+        code = typer.prompt("Code", hide_input=True)
+        await client.sign_in(phone, code=code)
+    except SessionPasswordNeededError:
+        password = typer.prompt("Password", hide_input=True)
+        await client.sign_in(password=password)
 
 
 def print_version(value: bool) -> None:
@@ -199,9 +217,11 @@ def main(
     client = TelegramClient(
         StringSession(session), api_id, api_hash, auto_reconnect=True
     )
+    client.loop.run_until_complete(sign_in(client))
+
     with client:
         if show_session:
-            print(f"\nSession:\n\n{client.session.save()}\n")
+            print(f"Session:\n\n{client.session.save()}\n")
 
         logger.info("client.connected", api_id=api_id, chat_id=chat_id)
 
