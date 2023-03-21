@@ -1,0 +1,18 @@
+---
+name: CI
+
+on: # yamllint disable-line rule:truthy
+  push:
+  pull_request:
+
+jobs:
+  pre-commit:
+    name: ✨ Pre-commit
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+      - name: Use Python
+        uses: actions/setup-python@v2
+      - name: Run pre-commit
+        uses: pre-commit/action@v3.0.0
