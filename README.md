@@ -163,9 +163,11 @@ quickly and easily.
 [![pre-commit](https://img.shields.io/badge/pre--commit-FAB040?logo=precommit&logoColor=fff&style=flat)][github-pre-commit]
 [![markdownlint](https://img.shields.io/badge/markdownlint-000?logo=markdown&logoColor=fff&style=flat)][github-markdownlint]
 [![commitlint](https://img.shields.io/badge/commitlint-F7B93E?logo=c&logoColor=000&style=flat)][github-commitlint]
+[![semantic-release](https://img.shields.io/badge/semantic--release-494949?logo=semanticrelease&logoColor=fff&style=flat)][github-semantic-release]
 [![Shields.io](https://img.shields.io/badge/Shields.io-000?logo=shieldsdotio&logoColor=fff&style=flat)][shields]
 [![Git](https://img.shields.io/badge/Git-F05032?logo=git&logoColor=fff&style=flat)][git-scm]
 [![GitHub](https://img.shields.io/badge/GitHub-181717?logo=github&logoColor=fff&style=flat)][github]
+[![GitHub Actions](https://img.shields.io/badge/GitHub%20Actions-2088FF?logo=githubactions&logoColor=fff&style=flat)][github-actions]
 <!-- markdownlint-enable MD013 -->
 
 ## ✍️ Contributing
@@ -193,12 +195,14 @@ for more information.
 
 <!-- markdownlint-disable MD013 -->
 <!-- Github links -->
+[github-actions]: https://docs.github.com/en/actions
 [github-bandit]: https://github.com/PyCQA/bandit
 [github-black]: https://github.com/psf/black
 [github-commitlint]: https://github.com/conventional-changelog/commitlint
 [github-flake8]: https://github.com/PyCQA/flake8
 [github-markdownlint]: https://github.com/DavidAnson/markdownlint
 [github-pre-commit]: https://github.com/pre-commit/pre-commit
+[github-semantic-release]: https://github.com/semantic-release/semantic-release
 [github-typer]: https://github.com/tiangolo/typer
 [github]: https://github.com
 
