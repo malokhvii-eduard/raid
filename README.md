@@ -18,6 +18,8 @@
 [![commitlint](https://img.shields.io/badge/linter-commitlint-F7B93E?style=flat)][github-commitlint]
 [![flake8](https://img.shields.io/badge/linter-flake8-3776AB?style=flat)][github-flake8]
 [![bandit](https://img.shields.io/badge/linter-bandit-FFC107?style=flat)][github-bandit]
+![CI Workflow](https://github.com/malokhvii-eduard/raid/actions/workflows/ci.yml/badge.svg)
+[![Release Workflow](https://github.com/malokhvii-eduard/raid/actions/workflows/release.yml/badge.svg)](https://github.com/malokhvii-eduard/raid/)
 
   </p>
 </div>
