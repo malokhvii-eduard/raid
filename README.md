@@ -90,8 +90,8 @@ using your Telegram account
 2. Click on the *"Create a new application"* button and fill in the required
 details, including the name and description of your application
 3. Once you have registered your app, you will be provided with an API key and
-an API identifier. Keep these credentials safe, as you will need them to
-integrate the Telegram API into the `raid`
+an API identifier. Keep these credentials safe, as you will need them to use
+the tool
 
 🎉👍 That's it! Now you have Telegram API identifier and key.
 
