@@ -2,7 +2,7 @@ name: Release
 
 on:
   workflow_run:
-    workflows: ['CI']
+    workflows: ["CI"]
     branches: [master]
     types:
       - completed
@@ -19,4 +19,4 @@ jobs:
       - name: Run semantic-release
         env:
           GITHUB_TOKEN: ${{ github.token }}
-        run: npx semantic-release
+        run: npx semantic-release || true
