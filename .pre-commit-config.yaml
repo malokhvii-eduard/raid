@@ -22,12 +22,12 @@ repos:
       - id: detect-secrets
         name: check for hardcoded secrets
   - repo: https://github.com/igorshubovych/markdownlint-cli
-    rev: v0.33.0
+    rev: v0.34.0
     hooks:
       - id: markdownlint
         name: check markdown
   - repo: https://github.com/adrienverge/yamllint.git
-    rev: v1.31.0
+    rev: v1.32.0
     hooks:
       - id: yamllint
         name: check yaml
