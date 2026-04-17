@@ -1,6 +1,9 @@
 ---
 default_stages: [pre-commit]
 
+default_language_version:
+  python: python3.10
+
 ci:
   skip: [commitlint]
 
@@ -63,4 +66,4 @@ repos:
       - id: commitlint
         name: check commit message
         stages: [commit-msg]
-        additional_dependencies: ['@commitlint/config-conventional']
+        additional_dependencies: ["@commitlint/config-conventional"]
